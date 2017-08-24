@@ -1,0 +1,13 @@
+<header>
+    <a href="/"><h1 class="site-title"><img class="site-icon" src="/favicon.ico"></img>Runtracker</h1></a>
+
+    <nav class="navbar">
+        <ul class="navitem">
+            {{#if authenticated}}
+                {{> userButtons}}
+            {{else}}
+                {{> guestButtons}}
+            {{/if}}
+        </ul>
+    </nav>
+</header>
