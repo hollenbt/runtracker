@@ -1,0 +1,15 @@
+<div>
+    <div id="map"></div>
+    <ul id="courseList">
+    {{#each course}}
+        <li class="course">
+            <span class="name">{{this.name}}</span>
+            <span class="distance">{{this.distance}}</span>
+            <span class="route hidden">{{this.route}}</span>
+        </li>
+    {{/each}}
+    </ul>
+</div>
+
+<script src="/logRun.js"></script>
+<script src={{googleMapsAPI}} async defer></script>

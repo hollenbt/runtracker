@@ -1,4 +1,12 @@
 #map {
-    width: 600px;
-    height: 600px;
+    width: 400px;
+    height: 400px;
+}
+
+.hidden {
+    display: none;
+}
+
+.course:hover {
+    cursor: pointer;
 }

@@ -1,0 +1,17 @@
+<input type="text" id="searchField" value="">
+<input type="button" id="searchButton" value="Search Map">
+<div id="map"></div>
+<input type="button" id="startRun" value="Start Run From Location">
+<input type="button" id="cancel" value="Cancel"><br><br>
+
+{{#if nameTaken}}
+<div class="warning-text">Course name taken.</div>
+{{/if}}
+<label for="name">Course Name:</label>
+<input type="text" name="name" value=""><br>
+<label for="distance">Course Distance:</label>
+<input type="text" name="distance" value=0 readonly><span> mi</span><br>
+<input type="button" id="saveCourse" value="Save course">
+
+<script src="/addCourse.js"></script>
+<script src={{googleMapsAPI}} async defer></script>

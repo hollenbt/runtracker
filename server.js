@@ -4,29 +4,28 @@ const hbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-//sessions
+//Sessions
 const session = require('express-session');
 const connectMongo = require("connect-mongo")(session);
 
-//authentication
+//Authentication
 const passport = require('passport');
-const passportLocalMongoose = require('passport-local-mongoose');
 const LocalStrategy = require('passport-local').Strategy;
 
-// mongoose connection
+// Mongoose connection
 mongoose.connect(process.env.MONGO_URI, { useMongoClient: true });
 mongoose.Promise = global.Promise;
 
 const app = express();
 
-// setting up handlebars
+// Setting up handlebars
 app.engine('.hbs', hbs({ defaultLayout: 'main', extname: '.hbs' }));
 app.set('view engine', '.hbs');
 
 app.use(express.static('./public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// use session that are stored in mongo
+// Use sessions stored in a MongoDB
 app.use(session({
     secret: 'Coconut La Croix sucks',
     resave: false,
@@ -34,28 +33,20 @@ app.use(session({
     store: new connectMongo({ mongooseConnection: mongoose.connection })
 }));
 
-// the account schema
-var accountSchema = new mongoose.Schema({
-    username: {type: String, unique: true, index: true}
-});
+const Account = require('./models/account.js');
+const Course = require('./models/course.js');
 
-// adding passport magic to the schema
-accountSchema.plugin(passportLocalMongoose);
-
-// getting the mongoose model
-const Account = mongoose.model('account', accountSchema);
-
-// setting up passport
+// Setting up passport
 passport.use(new LocalStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 
 
-// defining the middelware
+// Defining the middleware.
 app.use(passport.initialize());
 app.use(passport.session());
 
-// if authenticated, load user information into res.locals for use
+// If authenticated, load user information into res.locals for use
 // in handlebars templates
 app.use(function(req, res, next) {
     console.log(req.url);
@@ -67,30 +58,30 @@ app.use(function(req, res, next) {
     next();
 });
 
-// home page (root)
+// The home page.
 app.get('/', function(req, res) {
     res.render('home');
 });
 
-// signup page
+// The signup page.
 app.get('/signup', function(req, res) {
     res.render('signup');
 });
 
-// account creation
+// Account creation.
 app.post('/signup', function(req, res, next) {
     Account.register({username: req.body.username}, req.body.password, function(err, account) {
-        if (err) res.render('signup');
-        res.redirect('/login');
+        if (err) res.redirect('/signup');
+        else res.redirect('/login');
     });
 });
 
-// The login page
+// The login page.
 app.get('/login', function(req, res, next) {
     res.render('login');
 });
 
-// We let passport do the authentication
+// Let passport handle authentication.
 app.post('/login', 
     passport.authenticate('local', {
         successRedirect: '/', // if successful, go to home page
@@ -98,12 +89,53 @@ app.post('/login',
     })
 );
 
-// the user's account page
-// currently being used to add a run only
-app.get('/myaccount', function(req, res, next) {
+/****************************************************************************/
+// Only logged in users can access subsequent middleware.
+app.use(function(req, res, next) {
     if (res.locals.authenticated)
-        res.render('addRun');
+        next();
+    else res.render('home', { mustBeLoggedIn: true });
+});
+/****************************************************************************/
+
+// The user account page.
+app.get('/myaccount', function(req, res) {
+    res.render('myAccount');
+});
+
+// Page to add new courses.
+app.get('/addcourse', function(req, res) {
+    if (res.locals.authenticated)
+        res.render('addCourse');
     else res.redirect('/');
+});
+
+// Save a mapped course.
+app.post('/saveCourse', function(req, res) {
+    Course.findOne({ username: res.locals.user, name: req.body.name }).exec(function(err, course) {
+        if (err) return next(err);
+        if (course)
+            res.end("Course name already taken.");
+        else {
+            var newCourse = new Course({
+                username: res.locals.user,
+                name: req.body.name,
+                distance: req.body.distance,
+                route: req.body.route
+            });
+            newCourse.save(function(err) {
+                if (err) return next(err);
+                res.end("Course saved successfully.");
+            });
+        }
+    });
+});
+
+app.get('/logrun', function(req, res) {
+    Course.find({ username: res.locals.user }).exec(function(err, results) {
+        if (err) return next(err);
+        res.render('logRun', { course: results });
+    });
 });
 
 // log the user out

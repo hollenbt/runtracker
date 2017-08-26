@@ -4,11 +4,9 @@ var geocoder;
 var map;
 var marker;
 var latlng;
-var saved;
 var startRunButton = document.querySelector('#startRun');
 var cancelButton = document.querySelector('#cancel');
-var saveButton = document.querySelector('#saveRoute');
-var loadSavedButton = document.querySelector('#loadSavedRoute');
+var saveButton = document.querySelector('#saveCourse');
 var searchButton = document.querySelector('#searchButton');
 
 function initMap() {
@@ -32,18 +30,9 @@ function initMap() {
             totalDistance(directionsDisplay.getDirections());
         });
         searchButton.addEventListener('click', codeAddress);
-        startRunButton.addEventListener('click', startRoute);
-        cancelButton.addEventListener('click', cancelRoute);
-        saveButton.addEventListener('click', function() {
-            saved = directionsDisplay.getDirections();
-        });
-        loadSavedButton.addEventListener('click', function() {
-            latlng = saved.routes[0].legs[0].start_location;
-            setLocation();
-            directionsDisplay.setMap(map);
-            directionsDisplay.setDirections(saved);
-            marker.setMap(null);            
-        });
+        startRunButton.addEventListener('click', startCourse);
+        cancelButton.addEventListener('click', cancelCourse);
+        saveButton.addEventListener('click', verifyAndSubmitCourse);
     });
 }
 
@@ -59,7 +48,7 @@ function codeAddress() {
     });
 }
 
-function startRoute() {
+function startCourse() {
     var request = {
         origin: latlng,
         destination: latlng,
@@ -75,9 +64,26 @@ function startRoute() {
     });
 }
 
-function cancelRoute() {
+function cancelCourse() {
     directionsDisplay.setMap(null);
     marker.setMap(map);
+}
+
+function verifyAndSubmitCourse() {
+    var name = document.querySelector('input[name="name"]').value;
+    var distance = document.querySelector('input[name="distance"]').value;
+    if (name != "") {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/savecourse", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        var queryText = "name=" + name + "&distance=" + distance + "&route=" + JSON.stringify(directionsDisplay.getDirections());
+        xhr.send(queryText);
+
+        xhr.addEventListener('load', function() {
+            alert(xhr.response);
+        }, { once: true });
+    }
+    else alert("You must give the course a name.");
 }
 
 function createMarker() {
@@ -103,5 +109,5 @@ function totalDistance(result) {
     for (var i = 0; i < route.legs.length; ++i)
         total += route.legs[i].distance.value;
     total /= 1609.34; // convert meters to miles
-    document.querySelector('#distance').textContent = total.toFixed(1) + ' mi';
+    document.querySelector('input[name="distance"]').value = total.toFixed(1);
 }

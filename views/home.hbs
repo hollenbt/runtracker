@@ -1,5 +1,6 @@
 {{#if authenticated}}
-
     <h3>Welcome {{user}}</h3>
-    
+{{/if}}
+{{#if mustBeLoggedIn}}
+    <h3>You must log in first</h3>
 {{/if}}
