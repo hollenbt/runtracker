@@ -71,6 +71,8 @@ function cancelCourse() {
         draggable: true,
         preserveViewport: true,
         map: map
+    }).addListener('directions_changed', function() {
+        totalDistance(directionsDisplay.getDirections());
     });
     marker.setMap(map);
 }
