@@ -1,10 +1,18 @@
 <div>
-    <div id="map"></div>
+    <div id="map"></div><br>
+    <label for="startTime">Time of run:</label>
+    <input type="datetime-local" id="startTime" required><br>
+    <label for="duration">Run duration:</label>
+    <input type="number" id="duration"><span> min</span><br>
+    <input type="button" id="log" value="Log Run">
+</div>
+<div>
+    <h2>Courses:</h2>
     <ul id="courseList">
     {{#each course}}
         <li class="course">
-            <span class="name">{{this.name}}</span>
-            <span class="distance">{{this.distance}}</span>
+            <span class="name">{{this.name}}</span><br>
+            <span class="distance">{{this.distance}}</span><span> mi</span>
             <span class="route hidden">{{this.route}}</span>
         </li>
     {{/each}}

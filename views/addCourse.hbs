@@ -7,11 +7,14 @@
 {{#if nameTaken}}
 <div class="warning-text">Course name taken.</div>
 {{/if}}
-<label for="name">Course Name:</label>
-<input type="text" name="name" value=""><br>
-<label for="distance">Course Distance:</label>
-<input type="text" name="distance" value=0 readonly><span> mi</span><br>
-<input type="button" id="saveCourse" value="Save course">
+<form>
+    <label for="name">Course Name:</label>
+    <input type="text" name="name" value=""><br>
+    <label for="distance">Course Distance:</label>
+    <input type="number" name="distance" value="0" min="0" readonly><span> mi</span><br>
+    <input type="button" id="saveCourse" value="Save course">
+    <input type="reset" id="resetBtn" class="hidden">
+</form>
 
 <script src="/addCourse.js"></script>
 <script src={{googleMapsAPI}} async defer></script>

@@ -4,10 +4,11 @@ var geocoder;
 var map;
 var marker;
 var latlng;
+var searchButton = document.querySelector('#searchButton');
 var startRunButton = document.querySelector('#startRun');
 var cancelButton = document.querySelector('#cancel');
 var saveButton = document.querySelector('#saveCourse');
-var searchButton = document.querySelector('#searchButton');
+var resetBtn = document.querySelector('#resetBtn');
 
 function initMap() {
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -66,24 +67,36 @@ function startCourse() {
 
 function cancelCourse() {
     directionsDisplay.setMap(null);
+    directionsDisplay = new google.maps.DirectionsRenderer({
+        draggable: true,
+        preserveViewport: true,
+        map: map
+    });
     marker.setMap(map);
 }
 
 function verifyAndSubmitCourse() {
     var name = document.querySelector('input[name="name"]').value;
     var distance = document.querySelector('input[name="distance"]').value;
-    if (name != "") {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/savecourse", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        var queryText = "name=" + name + "&distance=" + distance + "&route=" + JSON.stringify(directionsDisplay.getDirections());
-        xhr.send(queryText);
+    if (directionsDisplay.getDirections()) {
+        if (name) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/savecourse", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            var queryText = "name=" + name + "&distance=" + distance + "&route=" + JSON.stringify(directionsDisplay.getDirections());
+            xhr.send(queryText);
 
-        xhr.addEventListener('load', function() {
-            alert(xhr.response);
-        }, { once: true });
+            xhr.addEventListener('load', function() {
+                alert(xhr.response);
+                if (xhr.response == "Course saved successfully.") {
+                    cancelCourse();
+                    resetBtn.click();
+                }
+            }, { once: true });
+        }
+        else alert("You must give the course a name.");
     }
-    else alert("You must give the course a name.");
+    else alert("You must first map a course to save.");
 }
 
 function createMarker() {

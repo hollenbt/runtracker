@@ -35,6 +35,7 @@ app.use(session({
 
 const Account = require('./models/account.js');
 const Course = require('./models/course.js');
+const Run = require('./models/run.js');
 
 // Setting up passport
 passport.use(new LocalStrategy(Account.authenticate()));
@@ -77,7 +78,7 @@ app.post('/signup', function(req, res, next) {
 });
 
 // The login page.
-app.get('/login', function(req, res, next) {
+app.get('/login', function(req, res) {
     res.render('login');
 });
 
@@ -99,8 +100,26 @@ app.use(function(req, res, next) {
 /****************************************************************************/
 
 // The user account page.
-app.get('/myaccount', function(req, res) {
-    res.render('myAccount');
+app.get('/myaccount', function(req, res, next) {
+    if (req.session.report) {
+        req.session.report = false;
+        Run.find({ username: res.locals.user })
+        .where('date').gte(new Date(req.session.begin))
+        .where('date').lte(new Date(req.session.end))
+        .sort({ date: -1 }).exec(function(err, results) {
+            if (err) return next(err);
+            res.render('myAccount', { run: results, begin: req.session.begin, end: req.session.end });
+        });
+    }
+    else res.render('myAccount');
+});
+
+// Generate a report.
+app.post('/report', function(req, res) {
+    req.session.report = true;
+    req.session.begin = req.body.begin;
+    req.session.end = req.body.end;
+    res.redirect('/myaccount');
 });
 
 // Page to add new courses.
@@ -111,7 +130,7 @@ app.get('/addcourse', function(req, res) {
 });
 
 // Save a mapped course.
-app.post('/saveCourse', function(req, res) {
+app.post('/saveCourse', function(req, res, next) {
     Course.findOne({ username: res.locals.user, name: req.body.name }).exec(function(err, course) {
         if (err) return next(err);
         if (course)
@@ -131,11 +150,31 @@ app.post('/saveCourse', function(req, res) {
     });
 });
 
-app.get('/logrun', function(req, res) {
-    Course.find({ username: res.locals.user }).exec(function(err, results) {
+// Page to log running activity.
+app.get('/logrun', function(req, res, next) {
+    Course.find({ username: res.locals.user }).sort({ name: 1 }).exec(function(err, results) {
         if (err) return next(err);
         res.render('logRun', { course: results });
     });
+});
+
+// Log a run.
+app.post('/logrun', function(req, res, next) {
+    var d = Date.parse(req.body.date);
+    if (isNaN(d))
+        res.end("Invalid date entered.");
+    else {
+        var newRun = new Run({
+            username: res.locals.user,
+            date: new Date(d + new Date().getTimezoneOffset() * 60000),
+            distance: req.body.distance,
+            duration: req.body.duration
+        });
+        newRun.save(function(err) {
+            if (err) return next(err);
+            res.end("Run logged successfully.");
+        });
+    }
 });
 
 // log the user out

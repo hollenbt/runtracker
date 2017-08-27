@@ -7,6 +7,40 @@
     display: none;
 }
 
+.course.active {
+    background-color: dodgerblue;
+}
+
+.course {
+    width: 350px;
+}
+
 .course:hover {
     cursor: pointer;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td, th {
+    vertical-align: center;
+    text-align: center;
+    height: 20px;
+    width: 200px;
+}
+
+td {
+    border-top: none;
+    border-bottom: none;
+}
+
+.site-icon {
+    height: 20px;
+    width: 20px;
+}
+
+.site-title {
+    text-decoration: none;
 }
