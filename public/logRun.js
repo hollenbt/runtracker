@@ -77,18 +77,22 @@ function loadCourse(index) {
 }
 
 function verifyAndLogRun() {
-    if (duration.value) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/logrun", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        var queryText = "date=" + startTime.value + "&distance=" + course[activeCourseIndex].distance + "&duration=" + duration.value;
-        xhr.send(queryText);
+    var dateVal = Date.parse(startTime.value);
+    if (!isNaN(dateVal)) {
+        if (duration.value) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/logrun", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            var queryText = "date=" + dateVal + "&distance=" + course[activeCourseIndex].distance + "&duration=" + duration.value;
+            xhr.send(queryText);
 
-        xhr.addEventListener('load', function() {
-            alert(xhr.response);
-            if (xhr.response == "Run logged successfully.")
-                duration.value = null;
-        }, { once: true });
+            xhr.addEventListener('load', function() {
+                alert(xhr.response);
+                if (xhr.response == "Run logged successfully.")
+                    duration.value = null;
+            }, { once: true });
+        }
+        else alert("Please specify the run duration.");
     }
-    else alert("Please specify the run duration.");
+    else alert("Invalid date and time entered.");
 }

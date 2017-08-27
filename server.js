@@ -1,5 +1,3 @@
-if (!process.env.DEPLOYED)
-    require('dotenv').config();
 const express = require('express');
 const hbs = require('express-handlebars');
 const mongoose = require('mongoose');
@@ -161,21 +159,16 @@ app.get('/logrun', function(req, res, next) {
 
 // Log a run.
 app.post('/logrun', function(req, res, next) {
-    var d = Date.parse(req.body.date);
-    if (isNaN(d))
-        res.end("Invalid date entered.");
-    else {
-        var newRun = new Run({
-            username: res.locals.user,
-            date: new Date(d + new Date().getTimezoneOffset() * 60000),
-            distance: req.body.distance,
-            duration: req.body.duration
-        });
-        newRun.save(function(err) {
-            if (err) return next(err);
-            res.end("Run logged successfully.");
-        });
-    }
+    var newRun = new Run({
+        username: res.locals.user,
+        date: new Date(Number(req.body.date)),
+        distance: req.body.distance,
+        duration: req.body.duration
+    });
+    newRun.save(function(err) {
+        if (err) return next(err);
+        res.end("Run logged successfully.");
+    });
 });
 
 // log the user out
