@@ -1,4 +1,4 @@
-if (!process.env.MONGODB_URI) // when not deployed on heroku
+if (!process.env.DEPLOYED)
     require('dotenv').config();
 const express = require('express');
 const hbs = require('express-handlebars');
@@ -198,4 +198,4 @@ app.use(function(req, res) {
     res.render('404');
 });
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 5000);
