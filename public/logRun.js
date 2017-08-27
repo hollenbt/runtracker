@@ -1,4 +1,5 @@
 var directionsDisplay;
+var directionsService;
 var map;
 var latlng;
 var course = [];
@@ -31,14 +32,15 @@ function initMap() {
     navigator.geolocation.getCurrentPosition(function(position) {
         latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         map = new google.maps.Map(document.querySelector('#map'), {
-            center: latlng,
-            zoom: 16,
-            disableDefaultUI: true
+            'center': latlng,
+            'zoom': 15,
+            'disableDefaultUI': true
         });
+        directionsService = new google.maps.DirectionsService();
         directionsDisplay = new google.maps.DirectionsRenderer({
-            draggable: false,
-            preserveViewport: false,
-            map: map
+            'draggable': false,
+            'preserveViewport': false,
+            'map': map
         });
         if (courseElements.length) {
             loadCourse(0);
@@ -53,17 +55,10 @@ function initMap() {
     });
 }
 
-function loadDateTime(d) {
-    var dateString = [
-        d.getFullYear(),
-        (d.getMonth() + 1).prependZero(),
-        d.getDate().prependZero()
-    ].join('-');
-    var timeString = [
-        d.getHours().prependZero(),
-        d.getMinutes().prependZero()
-    ].join(':');
-    startTime.value = dateString + 'T' + timeString;
+function loadDateTime(date) {
+    var d = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    var s = d.toISOString();
+    startTime.value = s.slice(0, s.length - 8);
 }
 
 function loadCourse(index) {
@@ -72,8 +67,27 @@ function loadCourse(index) {
     activeCourseIndex = index;
     courseElements[activeCourseIndex].classList.add('active');
 
-    map.fitBounds(course[index].route.routes[0].bounds);
-    directionsDisplay.setDirections(course[index].route);
+    var c = course[index].route;
+    var waypoints = [];
+    c.waypoints.forEach(function(wp) {
+        waypoints.push({
+            'location': new google.maps.LatLng(wp.lat, wp.lng),
+            'stopover': false
+        });
+    });
+
+    var request = {
+        'origin': new google.maps.LatLng(c.start.lat, c.start.lng),
+        'destination': new google.maps.LatLng(c.end.lat, c.end.lng),
+        'waypoints': waypoints,
+        'travelMode': 'WALKING'
+    };
+
+    directionsService.route(request, function(result, status) {
+        if (status == 'OK')
+            directionsDisplay.setDirections(result);
+        else alert('Directions request unsuccessful: ' + status);
+    });
 }
 
 function verifyAndLogRun() {

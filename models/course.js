@@ -4,7 +4,7 @@ var courseSchema = new mongoose.Schema({
     username: {type: String, index: true},
     name: String,
     distance: Number,
-    route: {}
+    route: String
 });
 
 const Course = mongoose.model('course', courseSchema);

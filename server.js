@@ -100,25 +100,18 @@ app.use(function(req, res, next) {
 
 // The user account page.
 app.get('/myaccount', function(req, res, next) {
-    if (req.session.report) {
-        req.session.report = false;
-        Run.find({ username: res.locals.user })
-        .where('date').gte(new Date(req.session.begin))
-        .where('date').lte(new Date(req.session.end))
-        .sort({ date: -1 }).exec(function(err, results) {
-            if (err) return next(err);
-            res.render('myAccount', { run: results, begin: req.session.begin, end: req.session.end });
-        });
-    }
-    else res.render('myAccount');
+    res.render('myAccount');
 });
 
 // Generate a report.
 app.post('/report', function(req, res) {
-    req.session.report = true;
-    req.session.begin = req.body.begin;
-    req.session.end = req.body.end;
-    res.redirect('/myaccount');
+    Run.find({ username: res.locals.user })
+    .where('date').gte(new Date(Number(req.body.begin)))
+    .where('date').lte(new Date(Number(req.body.end)))
+    .sort({ date: -1 }).exec(function(err, results) {
+        if (err) return next(err);
+        res.end(JSON.stringify(results));
+    });
 });
 
 // Page to add new courses.

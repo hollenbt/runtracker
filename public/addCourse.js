@@ -14,17 +14,16 @@ function initMap() {
     navigator.geolocation.getCurrentPosition(function(position) {
         latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         map = new google.maps.Map(document.querySelector('#map'), {
-            center: latlng,
-            zoom: 16,
-            //gestureHandling: 'cooperative',
-            disableDefaultUI: true
+            'center': latlng,
+            'zoom': 15,
+            'disableDefaultUI': true
         });
         createMarker();
         directionsService = new google.maps.DirectionsService();
         directionsDisplay = new google.maps.DirectionsRenderer({
-            draggable: true,
-            preserveViewport: true,
-            map: map
+            'draggable': true,
+            'preserveViewport': true,
+            'map': map
         });
         geocoder = new google.maps.Geocoder();
         directionsDisplay.addListener('directions_changed', function() {
@@ -51,15 +50,17 @@ function codeAddress() {
 
 function startCourse() {
     var request = {
-        origin: latlng,
-        destination: latlng,
-        travelMode: 'WALKING'
+        'origin': latlng,
+        'destination': latlng,
+        'travelMode': 'WALKING'
     };
     directionsService.route(request, function(result, status) {
         if (status == 'OK') {
             directionsDisplay.setMap(map);
             directionsDisplay.setDirections(result);
             marker.setMap(null);
+            startRunButton.setAttribute('disabled', "");
+            cancelButton.removeAttribute('disabled');
         }
         else alert('Directions request unsuccessful: ' + status);
     });
@@ -67,14 +68,10 @@ function startCourse() {
 
 function cancelCourse() {
     directionsDisplay.setMap(null);
-    directionsDisplay = new google.maps.DirectionsRenderer({
-        draggable: true,
-        preserveViewport: true,
-        map: map
-    }).addListener('directions_changed', function() {
-        totalDistance(directionsDisplay.getDirections());
-    });
+    document.querySelector('input[name="distance"]').value = 0;
     marker.setMap(map);
+    cancelButton.setAttribute('disabled', "");
+    startRunButton.removeAttribute('disabled');
 }
 
 function verifyAndSubmitCourse() {
@@ -82,10 +79,12 @@ function verifyAndSubmitCourse() {
     var distance = document.querySelector('input[name="distance"]').value;
     if (directionsDisplay.getDirections()) {
         if (name) {
+            var directionData = extractDirectionData(directionsDisplay.getDirections());
+
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/savecourse", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            var queryText = "name=" + name + "&distance=" + distance + "&route=" + JSON.stringify(directionsDisplay.getDirections());
+            var queryText = "name=" + name + "&distance=" + distance + "&route=" + JSON.stringify(directionData);
             xhr.send(queryText);
 
             xhr.addEventListener('load', function() {
@@ -125,4 +124,26 @@ function totalDistance(result) {
         total += route.legs[i].distance.value;
     total /= 1609.34; // convert meters to miles
     document.querySelector('input[name="distance"]').value = total.toFixed(1);
+}
+
+function extractDirectionData(directions) {
+    var data = {};
+    var leg = directions.routes[0].legs[0];
+    var wp = leg.via_waypoints;
+    data.start = {
+        'lat': leg.start_location.lat(),
+        'lng': leg.start_location.lng()
+    };
+    data.end = {
+        'lat': leg.end_location.lat(),
+        'lng': leg.end_location.lng()
+    };
+    data.waypoints = [];
+    wp.forEach(function(item, index) {
+        data.waypoints.push({
+            'lat': item.lat(),
+            'lng': item.lng()
+        });
+    });
+    return data;
 }

@@ -1,25 +1,32 @@
 <a href="/logrun">Log a run</a><br>
 <a href="/addcourse">Add a course</a><br><br>
 
-<form method="POST" action="/report">
+<form>
     <h2>Date Range:</h2>
     <label for="begin">From </label>
-    <input type="date" name="begin" value={{begin}}>
+    <input type="date" id="begin" value={{begin}}>
     <label for="end"> to </label>
-    <input type="date" name="end" value={{end}}>
-    <input type="submit" value="Generate Report">
+    <input type="date" id="end" value={{end}}>
+    <input type="button" id="generate" value="Generate Report">
 </form>
 <br><br>
 <table id="report">
-    <th>Date</th>
-    <th>Distance<br>(mi)</th>
-    <th>Average Pace<br>(min/mile)</th>
-    {{#each run}}
-        <tr>
-            <td>{{this.dateString}}</td>
-            <td>{{this.distance}}</td>
-            <td>{{this.pace}}</td>
+    <thead>
+        <tr class="heading">
+            <th>Date</th>
+            <th>Distance<br>(mi)</th>
+            <th>Duration<br>(min)</th>
+            <th>Average Pace<br>(min/mi)</th>
         </tr>
-    {{/each}}
+    </thead>
+    <tbody>
+        <tr class="run-template hidden">
+            <td class="date"></td>
+            <td class="distance"></td>
+            <td class="duration"></td>
+            <td class="pace"></td>
+        </tr>
+    </tbody>
 </table>
 
+<script src="/report.js"></script>
