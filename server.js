@@ -1,4 +1,5 @@
-require('dotenv').config();
+if (!process.env.MONGODB_URI) // when not deployed on heroku
+    require('dotenv').config();
 const express = require('express');
 const hbs = require('express-handlebars');
 const mongoose = require('mongoose');
@@ -13,7 +14,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 // Mongoose connection
-mongoose.connect(process.env.MONGO_URI, { useMongoClient: true });
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI, { useMongoClient: true });
 mongoose.Promise = global.Promise;
 
 const app = express();
