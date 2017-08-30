@@ -108,7 +108,7 @@ app.post('/report', function(req, res) {
     Run.find({ username: res.locals.user })
     .where('date').gte(new Date(Number(req.body.begin)))
     .where('date').lte(new Date(Number(req.body.end)))
-    .sort({ date: -1 }).exec(function(err, results) {
+    .sort({ date: 1 }).exec(function(err, results) {
         if (err) return next(err);
         res.end(JSON.stringify(results));
     });
