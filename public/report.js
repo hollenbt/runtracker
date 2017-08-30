@@ -35,6 +35,12 @@ function printReport(results) {
     document.querySelectorAll('tr.run').forEach(function(row) {
         row.parentElement.removeChild(row);
     });
+
+    var total = {
+        distance: 0,
+        duration: 0
+    };
+
     results.forEach(function(run) {
         var newRun = runTemplate.cloneNode(true);
         newRun.setAttribute('class', 'run');
@@ -43,7 +49,19 @@ function printReport(results) {
         newRun.querySelector('.duration').textContent = run.duration;
         newRun.querySelector('.pace').textContent = calcPace(run);
         report.appendChild(newRun);
+        total.distance += run.distance;
+        total.duration += run.duration;
     });
+    
+    if (total.distance) {
+        var totalStats = runTemplate.cloneNode(true);
+        totalStats.setAttribute('class', 'run totals');
+        totalStats.querySelector('.date').textContent = "Total";
+        totalStats.querySelector('.distance').textContent = total.distance.toFixed(1);
+        totalStats.querySelector('.duration').textContent = total.duration;
+        totalStats.querySelector('.pace').textContent = calcPace(total);
+        report.appendChild(totalStats);
+    }
 }
 
 function calcPace(run) {

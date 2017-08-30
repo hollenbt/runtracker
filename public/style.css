@@ -36,6 +36,11 @@ td {
     border-bottom: none;
 }
 
+.totals {
+    border-top: 1px solid black;
+    font-weight: bold;
+}
+
 .site-icon {
     height: 20px;
     width: 20px;
