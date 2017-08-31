@@ -60,7 +60,9 @@ app.use(function(req, res, next) {
 
 // The home page.
 app.get('/', function(req, res) {
-    res.render('home');
+    if (res.locals.authenticated)
+        res.redirect('/myruns');
+    else res.redirect('/login');
 });
 
 // The signup page.
@@ -78,7 +80,11 @@ app.post('/signup', function(req, res, next) {
 
 // The login page.
 app.get('/login', function(req, res) {
-    res.render('login');
+    if (req.session.redirected) {
+        req.session.redirected = false;
+        res.render('login', { mustBeLoggedIn: true });
+    }
+    else res.render('login');
 });
 
 // Let passport handle authentication.
@@ -94,13 +100,16 @@ app.post('/login',
 app.use(function(req, res, next) {
     if (res.locals.authenticated)
         next();
-    else res.render('home', { mustBeLoggedIn: true });
+    else {
+        req.session.redirected = true;
+        res.redirect('/login');
+    }
 });
 /****************************************************************************/
 
 // The user account page.
-app.get('/myaccount', function(req, res, next) {
-    res.render('myAccount');
+app.get('/myruns', function(req, res, next) {
+    res.render('myRuns');
 });
 
 // Generate a report.

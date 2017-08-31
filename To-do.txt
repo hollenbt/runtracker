@@ -1,5 +1,3 @@
-Move myAccount to the home page (if logged in), otherwise redirect to login page.
-
 Create new Account (settings) page, where you can change password and delete account.
 
 Combine logRun and addCourse in one page. Allow creation of a variation of an existing course, or from

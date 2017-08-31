@@ -1,3 +1,9 @@
+{{#if mustBeLoggedIn}}
+    <div class="hidden mustLogIn">Hidden</div>
+{{/if}}
+
+<h3>Log in to your account:</h3>
+
 <form method="POST" action="/login">
     <label for="username">Username:</label>
     <input type="text" name="username" value=""><br>
@@ -5,3 +11,5 @@
     <input type="password" name="password" value=""><br>
     <input type="submit" id="submitBtn" value="Log In">
 </form>
+
+<script src="/redirectCheck.js"></script>
