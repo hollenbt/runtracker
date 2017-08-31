@@ -1,2 +1,3 @@
-if (document.querySelector('.mustLogIn'))
-    alert("You must log in to view that page.");
+var rMsg = document.querySelector('.rMsg');
+if (rMsg)
+    alert(rMsg.textContent);

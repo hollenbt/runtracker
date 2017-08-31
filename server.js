@@ -67,7 +67,9 @@ app.get('/', function(req, res) {
 
 // The signup page.
 app.get('/signup', function(req, res) {
-    res.render('signup');
+    if (res.locals.authenticated)
+        res.redirect('/myruns');
+    else res.render('signup');
 });
 
 // Account creation.
@@ -80,9 +82,12 @@ app.post('/signup', function(req, res, next) {
 
 // The login page.
 app.get('/login', function(req, res) {
-    if (req.session.redirected) {
-        req.session.redirected = false;
-        res.render('login', { mustBeLoggedIn: true });
+    if (res.locals.authenticated)
+        res.redirect('/myruns');
+    else if (req.session.redirectMsg) {
+        var msg = req.session.redirectMsg;
+        req.session.redirectMsg = undefined;
+        res.render('login', { rMsg: msg });
     }
     else res.render('login');
 });
@@ -101,14 +106,14 @@ app.use(function(req, res, next) {
     if (res.locals.authenticated)
         next();
     else {
-        req.session.redirected = true;
+        req.session.redirectMsg = "You must log in to view that page.";
         res.redirect('/login');
     }
 });
 /****************************************************************************/
 
 // The user account page.
-app.get('/myruns', function(req, res, next) {
+app.get('/myruns', function(req, res) {
     res.render('myRuns');
 });
 
@@ -173,14 +178,39 @@ app.post('/logrun', function(req, res, next) {
     });
 });
 
-// log the user out
+// Account management page
+app.get('/manage', function(req, res) {
+    res.render('accountManagement');
+});
+
+// Change password
+app.post('/changepassword', function(req, res, next) {
+    Account.findOne({username: res.locals.user}).exec(function(err, account) {
+        if (err) next(err);
+        account.changePassword(req.body.current, req.body.new, function(err) {
+            if (err) res.end("The current password provided was incorrect.");
+            else res.end("Password successfully changed.");
+        });
+    });
+});
+
+// Delete account
+app.post('/delete', function(req, res, next) {
+    Account.deleteOne({username: res.locals.user}, function(err, acount) {
+        if (err) next(err);
+        req.session.redirectMsg = "Your account has been deleted.";
+        res.redirect('/login');
+    });
+});
+
+// Log the user out
 app.get('/logout', function(req, res) {
     req.logout();
     req.session.destroy();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
-// error handler
+// Error Handler
 app.use(function(err, req, res, next) {
     res.status(500);
     res.type('text/plain');

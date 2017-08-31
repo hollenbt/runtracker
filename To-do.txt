@@ -1,5 +1,3 @@
-Create new Account (settings) page, where you can change password and delete account.
-
 Combine logRun and addCourse in one page. Allow creation of a variation of an existing course, or from
 a chosen starting location. Saving course not required to log a run, but should prompt user to save before
 leaving page.
