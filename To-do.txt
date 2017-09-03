@@ -3,3 +3,6 @@ a chosen starting location. Saving course not required to log a run, but should 
 leaving page.
 
 Style, baby.
+    -set active navbar items
+    -style table
+    -prevent map and course list from overlapping on small page

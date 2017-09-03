@@ -1,20 +1,29 @@
-<input type="text" id="searchField" value="">
-<input type="button" id="searchButton" value="Search Map">
-<div id="map"></div>
-<input type="button" id="startRun" value="Start Run From Location">
-<input type="button" id="cancel" value="Cancel" disabled><br><br>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 container-fluid">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <input type="text" id="searchField" value="">
+                <input type="button" id="searchButton" value="Search Map">
+                <div id="map"></div>
+                <input type="button" id="startRun" value="Start Run From Location">
+                <input type="button" id="cancel" value="Cancel" disabled><br><br>
 
-{{#if nameTaken}}
-<div class="warning-text">Course name taken.</div>
-{{/if}}
-<form>
-    <label for="name">Course Name:</label>
-    <input type="text" name="name" value=""><br>
-    <label for="distance">Course Distance:</label>
-    <input type="number" name="distance" value="0" min="0" readonly><span> mi</span><br>
-    <input type="button" id="saveCourse" value="Save course">
-    <input type="reset" id="resetBtn" class="hidden">
-</form>
+                <form>
+                    <label for="name">Course Name:</label>
+                    <input type="text" name="name" value=""><br>
+                    <label for="distance">Course Distance:</label>
+                    <input type="number" name="distance" value="0" min="0" readonly><span> mi</span><br>
+                    <input type="button" id="saveCourse" value="Save course">
+                    <input type="reset" id="resetBtn" class="hidden">
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
 
 <script src="/addCourse.js"></script>
 <script src={{googleMapsAPI}} async defer></script>

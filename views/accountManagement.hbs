@@ -1,17 +1,27 @@
-<div class="container-fluid">
-    <h2>Change Password:</h2>
-    <form>
-        <label for="current">Current Password:</label>
-        <input type="text" id="current" value=""><br>
-        <label for="new">New Password:</label>
-        <input type="text" id="new" value=""><br>
-        <input type="button" id="submitBtn" value="Change Password"><br>
-    </form>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 container-fluid">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <h2>Change Password:</h2>
+                <form>
+                    <label for="current">Current Password:</label><br>
+                    <input type="text" id="current" value=""><br>
+                    <label for="new">New Password:</label><br>
+                    <input type="text" id="new" value=""><br><br>
+                    <input type="button" id="submitBtn" value="Change Password"><br>
+                </form>
 
-    <h2>Delete Account:</h2>
-    <form method="POST" action="/delete">
-        <input type="button" id="deleteBtn" value="Delete Account">
-    </form>
+                <h2>Delete Account:</h2>
+                <form method="POST" action="/delete">
+                    <input type="button" id="deleteBtn" value="Delete Account">
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
 </div>
 
 <script src="/accountManagement.js"></script>
