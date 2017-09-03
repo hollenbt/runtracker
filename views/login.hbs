@@ -2,14 +2,16 @@
     <div class="rMsg hidden">{{rMsg}}</div>
 {{/if}}
 
-<h3>Log in to your account:</h3>
+<div class="container-fluid text-center">
+    <h3>Log in to your account:</h3>
 
-<form method="POST" action="/login">
-    <label for="username">Username:</label>
-    <input type="text" name="username" value=""><br>
-    <label for="password">Password:</label>
-    <input type="password" name="password" value=""><br>
-    <input type="submit" id="submitBtn" value="Log In">
-</form>
+    <form method="POST" action="/login">
+        <label for="username">Username:</label>
+        <input type="text" name="username" value=""><br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" value=""><br>
+        <input type="submit" id="submitBtn" value="Log In">
+    </form>
+</div>
 
 <script src="/redirectCheck.js"></script>
